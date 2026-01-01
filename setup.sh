@@ -46,7 +46,7 @@ fi
 if [ "$IS_CONTAINER" -eq 1 ]; then
   echo "==> Adding nvim update alias"
   CONFIG_UPDATE_ALIAS="alias config-update='(cd \"$DOTFILES_DIR\" && git pull --ff-only && mkdir -p \"$HOME/.config\" && cp -a \"$DOTFILES_DIR/.config/.\" \"$HOME/.config/\" && if command -v nvim >/dev/null 2>&1; then nvim --headless \"+Lazy! sync\" \"+Lazy! clean\" +qa; fi)'"
-  POSTCREATE_FUNC="postcreate() { local dir=\"\${DEV_DOCK_DEVCONTAINER_PATH:-.devcontainer}\"; local target=\"$HOME/\${dir}/postcreate.sh\"; if [ \"${1:-}\" = \"--edit\" ]; then \"${EDITOR:-vi}\" \"$target\"; else bash \"$target\"; fi; }"
+  POSTCREATE_FUNC="postcreate() { local dir=\"\${DEV_DOCK_DEVCONTAINER_PATH:-.devcontainer}\"; local target=\"\$HOME/\${dir}/postcreate.sh\"; if [ \"\${1:-}\" = \"--edit\" ]; then \"\${EDITOR:-vi}\" \"\$target\"; else bash \"\$target\"; fi; }"
   if ! grep -q "alias config-update=" "$HOME/.bashrc"; then
     printf "\n# Update dotfiles .config from repo\n%s\n" "$CONFIG_UPDATE_ALIAS" >>"$HOME/.bashrc"
   fi
