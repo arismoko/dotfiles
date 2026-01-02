@@ -69,17 +69,20 @@ if [ -f "$HOME/.bashrc" ]; then
 fi
 EOF
 
-# COPILOT LANGUAGE SERVER
-if command -v npm >/dev/null 2>&1; then
-  echo "==> Installing Copilot Language Server"
-  npm install -g @github/copilot-language-server
-fi
-
 # Config
 if [ -d "$DOTFILES_DIR/.config" ]; then
   echo "==> Merging dotfiles .config"
   mkdir -p "$HOME/.config"
   cp -a "$DOTFILES_DIR/.config/." "$HOME/.config/"
+fi
+
+# COPILOT LANGUAGE SERVER
+if command -v npm >/dev/null 2>&1; then
+  echo "==> Installing Copilot Language Server"
+  npm config set prefix "$HOME/.local" >/dev/null 2>&1 || true
+  if ! npm install -g @github/copilot-language-server; then
+    echo "==> Copilot Language Server install failed; continuing" >&2
+  fi
 fi
 
 echo "==> Setup Complete!"
