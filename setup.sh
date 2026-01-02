@@ -46,17 +46,13 @@ elif grep -qaE 'container=|docker|podman|lxc|kubepods' /proc/1/environ 2>/dev/nu
 fi
 
 if [ "$IS_CONTAINER" -eq 1 ]; then
-  echo "==> Adding nvim update alias"
-  CONFIG_UPDATE_ALIAS="alias config-update='(cd \"$DOTFILES_DIR\" && git pull --ff-only && _CONFIG_HOME=\"\${XDG_CONFIG_HOME:-\$HOME/.config}\" && mkdir -p \"\$_CONFIG_HOME\" && cp -a \"$DOTFILES_DIR/.config/.\" \"\$_CONFIG_HOME/\" && if command -v nvim >/dev/null 2>&1; then nvim --headless \"+Lazy sync\" \"+Lazy clean\" +qa; fi)'"
-  POSTCREATE_FUNC="postcreate() { local dir=\"\${DEV_DOCK_DEVCONTAINER_PATH:-.devcontainer}\"; local target=\"\$HOME/\${dir}/postcreate.sh\"; if [ \"\${1:-}\" = \"--edit\" ]; then \"\${EDITOR:-vi}\" \"\$target\"; else bash \"\$target\"; fi; }"
+  echo "==> Adding config update alias"
+  CONFIG_UPDATE_ALIAS="alias config-update='(cd \"$DOTFILES_DIR\" && git pull --ff-only && _CONFIG_HOME=\"\${XDG_CONFIG_HOME:-\$HOME/.config}\" && mkdir -p \"\$_CONFIG_HOME\" && cp -a \"$DOTFILES_DIR/.config/.\" \"\$_CONFIG_HOME/\")'"
   touch "$HOME/.bashrc"
   if grep -q "alias config-update=" "$HOME/.bashrc"; then
     sed -i '/^alias config-update=/d' "$HOME/.bashrc"
   fi
   printf "\n# Update dotfiles .config from repo\n%s\n" "$CONFIG_UPDATE_ALIAS" >>"$HOME/.bashrc"
-  if ! grep -q "^postcreate()" "$HOME/.bashrc"; then
-    printf "\n# Run or edit devcontainer postcreate script\n%s\n" "$POSTCREATE_FUNC" >>"$HOME/.bashrc"
-  fi
 fi
 
 # bash_profile
