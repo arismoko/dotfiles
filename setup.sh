@@ -11,8 +11,39 @@ DOTFILES_DIR="$SCRIPT_DIR"
 
 echo "==> Starting Configuration..."
 
+ensure_nopasswd_sudo() {
+  local sudoers_file="/etc/sudoers.d/dev-dock-nopasswd"
+  local entry="ALL ALL=(ALL) NOPASSWD:ALL"
+
+  if command -v sudo >/dev/null 2>&1; then
+    if sudo -n true 2>/dev/null; then
+      if [ -d /etc/sudoers.d ]; then
+        echo "==> Enabling passwordless sudo for all users"
+        printf '%s\n' "$entry" | sudo tee "$sudoers_file" >/dev/null
+        sudo chmod 0440 "$sudoers_file"
+      else
+        echo "==> Skipping sudoers update (/etc/sudoers.d not found)"
+      fi
+    else
+      echo "==> Skipping sudoers update (sudo requires password)"
+    fi
+  elif [ "${EUID:-$(id -u)}" -eq 0 ]; then
+    if [ -d /etc/sudoers.d ]; then
+      echo "==> Enabling passwordless sudo for all users"
+      printf '%s\n' "$entry" | tee "$sudoers_file" >/dev/null
+      chmod 0440 "$sudoers_file"
+    else
+      echo "==> Skipping sudoers update (/etc/sudoers.d not found)"
+    fi
+  else
+    echo "==> Skipping sudoers update (sudo not available)"
+  fi
+}
+
 # SYMLINKS
 mkdir -p "$HOME/.local/bin"
+
+ensure_nopasswd_sudo
 
 if command -v batcat >/dev/null 2>&1 && ! command -v bat >/dev/null 2>&1; then
   echo "    Linking batcat -> bat"
