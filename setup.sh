@@ -55,19 +55,6 @@ if [ "$IS_CONTAINER" -eq 1 ]; then
   printf "\n# Update dotfiles .config from repo\n%s\n" "$CONFIG_UPDATE_ALIAS" >>"$HOME/.bashrc"
 fi
 
-# bash_profile
-cat >"$HOME/.bash_profile" <<'EOF'
-export PATH="$HOME/.local/bin:$PATH"
-
-if [ -f "$HOME/.profile" ]; then
-  . "$HOME/.profile"
-fi
-
-if [ -f "$HOME/.bashrc" ]; then
-  . "$HOME/.bashrc"
-fi
-EOF
-
 # Config
 if [ -d "$DOTFILES_DIR/.config" ]; then
   echo "==> Merging dotfiles .config"
